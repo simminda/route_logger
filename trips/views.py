@@ -56,16 +56,29 @@ User = get_user_model()
 
 @api_view(["POST"])
 def register_user(request):
-    """
-    Register a new user.
-    """
-    serializer = CustomUserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
-        user.set_password(request.data["password"])  # Hash the password
-        user.save()
-        return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        # For debugging
+        print("Request data:", request.data)
+        
+        serializer = CustomUserSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                user = serializer.save()
+                return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                print(f"Error saving user: {e}")
+                import traceback
+                traceback.print_exc()
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            print("Validation errors:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        import traceback
+        traceback.print_exc()
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 @api_view(["POST"])
 def login_user(request):
@@ -83,3 +96,14 @@ def login_user(request):
         return Response({"token": token.key, "user": CustomUserSerializer(user).data}, status=status.HTTP_200_OK)
     
     return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['GET'])
+def get_user_info(request):
+    """
+    Get information about the currently authenticated user.
+    """
+    if request.user.is_authenticated:
+        serializer = CustomUserSerializer(request.user)
+        return Response(serializer.data)
+    return Response({"detail": "Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)

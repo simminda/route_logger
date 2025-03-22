@@ -14,12 +14,22 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = async () => {
         try {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+    
             const response = await fetch("http://127.0.0.1:8000/api/user/", {
-                headers: { Authorization: `Token ${token}` },
+                headers: {
+                    "Authorization": `Token ${token}`,
+                },
             });
+    
             if (response.ok) {
-                const data = await response.json();
-                setUser(data);
+                const userData = await response.json();
+                setUser(userData);
+            } else {
+                // Handle authentication failure
+                localStorage.removeItem("token");
+                setUser(null);
             }
         } catch (error) {
             console.error("Failed to fetch user:", error);
@@ -30,15 +40,18 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await fetch("http://127.0.0.1:8000/api/login/", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 body: JSON.stringify(credentials),
             });
-
+    
             if (response.ok) {
                 const data = await response.json();
-                setToken(data.token);
+                // Store the token
                 localStorage.setItem("token", data.token);
-                fetchUser();
+                // Fetch user info
+                await fetchUser();
                 return true;
             }
         } catch (error) {
@@ -51,9 +64,14 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await fetch("http://127.0.0.1:8000/api/register/", {
                 method: "POST",
-                body: formData, // FormData instead of JSON
+                body: formData,
             });
-    
+            
+            // Log response details for debugging
+            console.log("Status:", response.status);
+            const responseData = await response.clone().json().catch(e => "Could not parse JSON");
+            console.log("Response data:", responseData);
+            
             return response.ok;
         } catch (error) {
             console.error("Registration failed:", error);
