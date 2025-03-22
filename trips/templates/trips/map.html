@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h2>Trip Route</h2>
+    <div id="map"></div>
+
+    <br><br>
+    <canvas id="eldChart" width="800" height="100"></canvas>
+    
+    <script>
+        var map = L.map('map').setView([-26.2041, 28.0473], 10);  // Default center
+    
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+    
+        // Fetch trip details from Django API
+        fetch("http://127.0.0.1:8000/api/trips/1/")  // Replace '1' with actual trip ID
+            .then(response => response.json())
+            .then(data => {
+                console.log("Trip Data:", data);
+    
+                var pickupLat = data.pickup_lat;
+                var pickupLng = data.pickup_lng;
+                var dropoffLat = data.dropoff_lat;
+                var dropoffLng = data.dropoff_lng;
+                var orsApiKey = "{{ ORS_API_KEY }}";
+    
+                console.log("Pickup:", pickupLat, pickupLng);
+                console.log("Dropoff:", dropoffLat, dropoffLng);
+    
+                // Add pickup & dropoff markers
+                var pickup = L.marker([pickupLat, pickupLng]).addTo(map).bindPopup("Pickup Location");
+                var dropoff = L.marker([dropoffLat, dropoffLng]).addTo(map).bindPopup("Dropoff Location");
+    
+                // OpenRouteService API request
+                var routeUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${orsApiKey}&start=${pickupLng},${pickupLat}&end=${dropoffLng},${dropoffLat}`;
+    
+                console.log("Fetching route from ORS:", routeUrl);
+    
+                fetch(routeUrl)
+                    .then(response => response.json())
+                    .then(routeData => {
+                        console.log("Route Data:", routeData);
+
+                        if (!routeData || !routeData.features || routeData.features.length === 0) {
+                            console.error("Invalid route data received:", routeData);
+                            alert("Could not retrieve route. Please check the API response.");
+                            return;
+                        }
+
+                        var routeCoords = routeData.features[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
+                        console.log("Route Coordinates:", routeCoords);
+
+                        var routeLine = L.polyline(routeCoords, { color: 'blue' }).addTo(map);
+                        map.fitBounds(routeLine.getBounds());
+                    })
+                    .catch(error => {
+                        console.error("Error fetching route:", error);
+                        alert("Error fetching route from OpenRouteService.");
+                    });
+
+            })
+            .catch(error => {
+                console.error("Error fetching trip data:", error);
+                alert("Error fetching trip data. Please check the API.");
+        });
+
+        // Fetch and display ELD logs grouped by date
+        fetch("http://127.0.0.1:8000/api/trips/1/eld_logs_by_date/")
+            .then(response => response.json())
+            .then(logsByDate => {
+                console.log("ELD Logs by Date:", logsByDate);
+
+                const labels = ["Off Duty", "Sleeper Berth", "Driving", "On Duty (Not Driving)"];
+                const backgroundColors = ["gray", "purple", "blue", "orange"];
+
+                // Initialize datasets for each duty status
+                let datasets = labels.map((status, index) => ({
+                    label: status,
+                    backgroundColor: backgroundColors[index],
+                    data: []
+                }));
+
+                // Get the first available date dynamically
+                const logDates = Object.keys(logsByDate);
+                if (logDates.length === 0) {
+                    console.warn("No ELD logs available.");
+                    return;
+                }
+
+                const selectedDate = logDates[0]; // Use the first available date
+                const logs = logsByDate[selectedDate];
+
+                logs.forEach(log => {
+                    let startTimeParts = log.start_time.split(":").map(Number);
+                    let endTimeParts = log.end_time.split(":").map(Number);
+
+                    let startHour = startTimeParts[0] + startTimeParts[1] / 60;
+                    let endHour = endTimeParts[0] + endTimeParts[1] / 60;
+
+                    // Ensure valid time range
+                    if (endHour <= startHour) {
+                        console.warn(`Skipping invalid log entry: ${log.start_time} - ${log.end_time}`);
+                        return;
+                    }
+
+                    // Find the correct dataset for the status
+                    let dataset = datasets[log.status];
+
+                    // Append a horizontal bar from startHour to endHour
+                    dataset.data.push({
+                        x: startHour, 
+                        x2: endHour,  // Use x2 for range bars
+                        y: labels[log.status]  // Correct Y-axis mapping
+                    });
+                });
+
+                // Ensure that all duty statuses appear, even if they have no logs
+                datasets.forEach((dataset, index) => {
+                    if (dataset.data.length === 0) {
+                        dataset.data.push({ x: 0, x2: 0.01, y: labels[index] });
+                    }
+                });
+
+                // Clear previous chart before drawing a new one
+                var ctx = document.getElementById("eldChart").getContext("2d");
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+                new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        datasets: datasets.map(dataset => ({
+                            label: dataset.label,
+                            backgroundColor: dataset.backgroundColor,
+                            borderColor: dataset.backgroundColor,
+                            borderWidth: 1,
+                            data: dataset.data.map(entry => ({
+                                x: [entry.x, entry.x2], // Ensure bars show as ranges
+                                y: entry.y
+                            }))
+                        }))
+                    },
+                    options: {
+                        indexAxis: "y",
+                        scales: {
+                            x: {
+                                type: "linear",
+                                min: 0,
+                                max: 24,
+                                ticks: {
+                                    stepSize: 1,
+                                    callback: value => `${value}:00`
+                                },
+                                title: { display: true, text: "Time (Hours)" }
+                            },
+                            y: { title: { display: true, text: "Duty Status" } }
+                        },
+                        plugins: { legend: { display: true } }
+                    }
+                });
+            })
+            .catch(error => console.error("Error fetching logs:", error));
+    </script>
+    
+</body>
+</html>
