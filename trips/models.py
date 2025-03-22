@@ -1,6 +1,15 @@
 from django.db import models
 from datetime import timedelta
 from django.utils.timezone import now
+from django.contrib.auth.models import AbstractUser
+
+
+class CustomUser(AbstractUser):
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    is_driver = models.BooleanField(default=False)  
+
+    def __str__(self):
+        return self.username
 
 
 class Truck(models.Model):
@@ -73,3 +82,6 @@ class ELDLog(models.Model):
 
     def __str__(self):
         return f"Trip {self.trip.id} | {self.get_status_display()} | {self.start_time.strftime('%Y-%m-%d %H:%M')} - {self.end_time.strftime('%H:%M')}"
+    
+
+

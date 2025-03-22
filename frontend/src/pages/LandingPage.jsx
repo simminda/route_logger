@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "../style.css" 
+import Sidebar from "../components/Sidebar";
 import logo from "../../public/images/logo.png";
 
 
@@ -42,37 +43,8 @@ const LandingPage = () => {
     return (
       <div className="landing-page">
         {/* Sidebar Navigation */}
-        <nav>
-            <div className="logo-name">
-                <div className="logo-image">
-                    <img src={logo} alt="ELD Logo" />
-                </div>
-                <span className="logo_name">RouteLogger</span>
-            </div>
-            <div className="menu-items">
-                <ul className="nav-links">
-                    <li><a href="#"><i className="uil uil-dashboard"></i><span>Dashboard</span></a></li>
-                    <li className="active"><a href="#"><i className="uil uil-plus-circle"></i><span>New Trip</span></a></li>
-                    <li><a href="#"><i className="uil uil-history"></i><span>Trip History</span></a></li>
-                    <li><a href="#"><i className="uil uil-file-alt"></i><span>ELD Logs</span></a></li>
-                    <li><a href="#"><i className="uil uil-map"></i><span>Map View</span></a></li>
-                    <li><a href="#"><i className="uil uil-setting"></i><span>Settings</span></a></li>
-                    <li><a href="#"><i className="uil uil-question-circle"></i><span>Help & Resources</span></a></li>
-                </ul>
-                <ul className="logout-mode">
-                    <li><a href="#"><i className="uil uil-signout"></i><span>Logout</span></a></li>
-                    <li className="mode">
-                        <a href="#" onClick={handleToggleDarkMode}>
-                            <i className={`uil ${darkMode ? "uil-sun" : "uil-moon"}`}></i>
-                            <span>{darkMode ? "Light Mode" : "Dark Mode"}</span>
-                        </a>
-                        <div className="mode-toggle">
-                            <span className={`switch ${darkMode ? "active" : ""}`}></span>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        <Sidebar darkMode={darkMode} handleToggleDarkMode={handleToggleDarkMode} />
+        
   
         {/* Dashboard Section */}
         <section className="dashboard">
