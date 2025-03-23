@@ -66,10 +66,10 @@ const Dashboard = () => {
         {/* Dashboard Overview */}
         <div className="dash-content">
             <div className="overview">
-            <div className="title">
-                <i className="uil uil-truck"></i>
-                <span className="text">New Trip Planning</span>
-            </div>
+                <div className="title">
+                    <i className="uil uil-truck"></i>
+                    <span className="text">Trip Details</span>
+                </div>
             <div className="boxes">
                 <div className="box box1">
                 <i className="uil uil-clock"></i>
@@ -104,44 +104,38 @@ const Dashboard = () => {
             <div className="trip-planner">
             <div className="title">
                 <i className="uil uil-route"></i>
-                <span className="text">Trip Details</span>
+                <span className="text">New Trip</span>
             </div>
             <div className="form-container">
-            <form className="trip-form container mt-4 p-4 border rounded shadow">
-                <div className="row mb-3">
-                    <div className="col-md-4">
-                        <label className="form-label">Current Location</label>
-                        <input type="text" className="form-control" placeholder="Enter current location" />
+                <form className="trip-form container mt-4 p-4 border rounded shadow">
+                    <div className="row mb-3">
+                        <div className="col-md-4">
+                            <label className="form-label">Current Location</label>
+                            <input type="text" className="form-control" placeholder="Enter current location" />
+                        </div>
+                        <div className="col-md-4">
+                            <label className="form-label">Pickup Location</label>
+                            <input type="text" className="form-control" placeholder="Enter pickup location" />
+                        </div>
+                        <div className="col-md-4">
+                            <label className="form-label">Dropoff Location</label>
+                            <input type="text" className="form-control" placeholder="Enter dropoff location" />
+                        </div>
                     </div>
-                    <div className="col-md-4">
-                        <label className="form-label">Pickup Location</label>
-                        <input type="text" className="form-control" placeholder="Enter pickup location" />
-                    </div>
-                    <div className="col-md-4">
-                        <label className="form-label">Dropoff Location</label>
-                        <input type="text" className="form-control" placeholder="Enter dropoff location" />
-                    </div>
-                </div>
 
-                <div className="row mb-3">
-                    <div className="col-md-6">
-                        <label className="form-label">Current Cycle Used (Hours)</label>
-                        <input type="number" className="form-control" min="0" max="70" defaultValue="34" />
+                    <div className="row mb-3">
+                        <div className="col-md-6">
+                            <label className="form-label">Current Cycle Used (Hours)</label>
+                            <input type="number" className="form-control" min="0" max="70" defaultValue="34" />
+                        </div>
+                        <div className="col-md-6 d-flex align-items-end">
+                            <button type="submit" className="btn btn-primary w-100">
+                                <i className="uil uil-process"></i> Generate Route & Logs
+                            </button>
+                        </div>
                     </div>
-                    <div className="col-md-6 d-flex align-items-end">
-                        <button type="submit" className="btn btn-primary w-100">
-                            <i className="uil uil-process"></i> Generate Route & Logs
-                        </button>
-                    </div>
-                </div>
-            </form>
+                </form>
 
-                <div className="map-preview">
-                <div className="map-placeholder">
-                    <i className="uil uil-map"></i>
-                    <p>Route preview will appear here</p>
-                </div>
-                </div>
             </div>
             </div>
 

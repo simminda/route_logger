@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 
 const Register = () => {
@@ -120,6 +120,9 @@ const Register = () => {
                         Register
                     </button>
                 </form>
+                <div className="text-center mt-3">
+                    <small>Already have an account? <Link to="/login">Login here</Link></small>
+                </div>
             </div>
         </div>
     );
