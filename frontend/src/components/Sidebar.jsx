@@ -22,7 +22,7 @@ const Sidebar = ({ darkMode, handleToggleDarkMode }) => {
       </div>
       <div className="menu-items">
         <ul className="nav-links">
-          <li><Link to="/"><i className="uil uil-dashboard"></i><span>Dashboard</span></Link></li>
+          <li><Link to="/dashboard"><i className="uil uil-dashboard"></i><span>Dashboard</span></Link></li>
           <li className="active"><Link to="/new-trip"><i className="uil uil-plus-circle"></i><span>New Trip</span></Link></li>
           <li><Link to="/history"><i className="uil uil-history"></i><span>Trip History</span></Link></li>
           <li><Link to="/logs"><i className="uil uil-file-alt"></i><span>ELD Logs</span></Link></li>

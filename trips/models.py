@@ -76,12 +76,18 @@ class ELDLog(models.Model):
 
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='eld_logs')
     status = models.IntegerField(choices=STATUS_CHOICES)  
-    start_time = models.DateTimeField()  # When this status started
-    end_time = models.DateTimeField()    # When this status ended
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # Save the log first
+        self.trip.current_cycle_used = self.trip.calculate_cycle_hours()
+        self.trip.save(update_fields=['current_cycle_used'])  # Save only the updated field
 
     def __str__(self):
         return f"Trip {self.trip.id} | {self.get_status_display()} | {self.start_time.strftime('%Y-%m-%d %H:%M')} - {self.end_time.strftime('%H:%M')}"
+
     
 
 

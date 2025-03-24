@@ -2,6 +2,7 @@
 import { useEffect, useState, useContext } from "react";
 import "../style.css" 
 import Sidebar from "../components/Sidebar";
+import TripForm from "../components/TripForm";
 import AuthContext from "../context/AuthContext";
 
 
@@ -43,6 +44,31 @@ const Dashboard = () => {
 
     const authContext = useContext(AuthContext);
     const username = authContext.user?.username || "???";
+
+    // Drive Time
+    const [availableDriveTime, setAvailableDriveTime] = useState(0);
+    useEffect(() => {
+        const fetchTrips = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/trips/");
+                const data = await response.json();
+                setTrips(data);
+                setLoading(false);
+    
+                // Set available drive time based on the latest trip
+                if (data.length > 0) {
+                    setAvailableDriveTime(data[data.length - 1].available_drive_time);
+                } else {
+                    setAvailableDriveTime(0);  // Default to 0 if no trips exist
+                }
+            } catch (error) {
+                console.error("Error fetching trips:", error);
+                setLoading(false);
+            }
+        };
+    
+        fetchTrips();
+    }, []);
 
     return (
     <div className="landing-page">
@@ -93,9 +119,15 @@ const Dashboard = () => {
                 )}
                 </div>
                 <div className="box box3">
-                <i className="uil uil-schedule"></i>
-                <span className="text">Available Drive Time</span>
-                <span className="number" style={{ fontSize: "30px", fontWeight: "normal" }}>7.5 hrs</span>
+                    <i className="uil uil-schedule"></i>
+                    <span className="text">Available Drive Time</span>
+                    {loading ? (
+                        <span className="number">Loading...</span>
+                    ) : (
+                        <span className="number" style={{ fontSize: "30px", fontWeight: "normal" }}>
+                            {availableDriveTime} hrs
+                        </span>
+                    )}
                 </div>
             </div>
             </div>
@@ -107,35 +139,8 @@ const Dashboard = () => {
                 <span className="text">New Trip</span>
             </div>
             <div className="form-container">
-                <form className="trip-form container mt-4 p-4 border rounded shadow">
-                    <div className="row mb-3">
-                        <div className="col-md-4">
-                            <label className="form-label">Current Location</label>
-                            <input type="text" className="form-control" placeholder="Enter current location" />
-                        </div>
-                        <div className="col-md-4">
-                            <label className="form-label">Pickup Location</label>
-                            <input type="text" className="form-control" placeholder="Enter pickup location" />
-                        </div>
-                        <div className="col-md-4">
-                            <label className="form-label">Dropoff Location</label>
-                            <input type="text" className="form-control" placeholder="Enter dropoff location" />
-                        </div>
-                    </div>
-
-                    <div className="row mb-3">
-                        <div className="col-md-6">
-                            <label className="form-label">Current Cycle Used (Hours)</label>
-                            <input type="number" className="form-control" min="0" max="70" defaultValue="34" />
-                        </div>
-                        <div className="col-md-6 d-flex align-items-end">
-                            <button type="submit" className="btn btn-primary w-100">
-                                <i className="uil uil-process"></i> Generate Route & Logs
-                            </button>
-                        </div>
-                    </div>
-                </form>
-
+                {/* Sidebar Navigation */}
+                <TripForm darkMode={darkMode} handleToggleDarkMode={handleToggleDarkMode} />
             </div>
             </div>
 
