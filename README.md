@@ -32,8 +32,8 @@ The application was developed as part of a Full Stack Developer assessment and i
 
 ### Clone the repository
 ```bash
-git clone https://github.com/your-username/trip-eld-logger.git
-cd trip-eld-logger
+git clone https://github.com/simminda/route_logger.git
+cd route_logger
 ```
 
 ### Backend Setup (Django)
@@ -63,22 +63,19 @@ Access the app at http://localhost:5173
 5. Review each day's log sheet to ensure DOT compliance.
 
 ## To-Do
+- Resolve missing truck and trip bugs on forms
 - Implement Google Places or Mapbox Autocomplete
 - Enable PDF export of daily log sheets
-- Add user accounts and trip history
+- Enhance user accounts and trip history
+- Enhance Search
 - Include distance and estimated time on the route display
-- Improve mobile responsiveness
+- Improve dark mode and mobile responsiveness
+- Draw vertical lines to indicate change in status on graphs
 
-## Assumptions
-- 70 hours over 8 days driving limit (property-carrying)
-- 11-hour daily driving cap
-- 1 hour allotted each for pickup and dropoff
-- Fueling required every 1,000 miles
-- No adverse driving conditions considered
 
 ## Live Demo and Loom Walkthrough
-- 🌐 Live App: https://your-vercel-link.com
-- 📹 Loom Walkthrough: https://loom.com/share/your-loom-id
+- 🌐 Live App: 
+- 📹 Loom Walkthrough: 
 
 ## License
 This project is open-source and available under the MIT License.
@@ -89,7 +86,6 @@ Developed by Simphiwe Ndaba
 - 💼 Full-Stack Developer
 
 ## Acknowledgments
-- This project was developed for a Full Stack Developer challenge with a $250 reward.
 - Map data and routing provided by OpenRouteService.
 
 ## Screenshots
