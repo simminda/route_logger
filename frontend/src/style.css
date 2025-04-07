@@ -107,6 +107,7 @@ nav .menu-items{
 }
 .menu-items li{
     list-style: none;
+    margin-left: -40px;
 }
 .menu-items li a{
     display: flex;
@@ -547,3 +548,10 @@ nav.close ~ .dashboard .top{
       flex-direction: column;
     }
 }
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  

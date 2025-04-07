@@ -7,7 +7,7 @@ User = get_user_model()
 class ELDLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = ELDLog
-        fields = "__all__"
+        fields = ['status', 'start_time', 'end_time', 'trip']
 
 
 class TripSerializer(serializers.ModelSerializer):
@@ -27,7 +27,10 @@ class TripSerializer(serializers.ModelSerializer):
         ]
 
     def get_available_drive_time(self, obj):
-        return max(0, 70 - obj.current_cycle_used)  # Max allowed hours is 70
+        return max(0, 70 - obj.calculate_cycle_hours())
+    
+    
+
 
 
 class CustomUserSerializer(serializers.ModelSerializer):

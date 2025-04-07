@@ -1,153 +1,216 @@
-
-import { useEffect, useState, useContext } from "react";
-import "../style.css" 
-import Sidebar from "../components/Sidebar";
-import TripForm from "../components/TripForm";
-import AuthContext from "../context/AuthContext";
-
+import { useEffect, useState } from "react";
+import TripMap from "../components/TripMap";
+import Layout from "../components/Layout";
 
 const Dashboard = () => {
-    const [trips, setTrips] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [darkMode, setDarkMode] = useState(
-        localStorage.getItem("mode") === "dark"
-    );
-    
-    useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/trips/")
-        .then((response) => response.json())
-        .then((data) => {
-        setTrips(data);
-        setLoading(false);
-        })
-        .catch((error) => {
-        console.error("Error fetching trips:", error);
-        setLoading(false);
-        });
-    }, []);
+  const [trips, setTrips] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [availableDriveTime, setAvailableDriveTime] = useState(0);
+  const [date, setDate] = useState(""); // New state for date input
+  const [showModal, setShowModal] = useState(false);
 
-    // Apply dark mode class to body
-    useEffect(() => {
-        if (darkMode) {
-            document.body.classList.add("dark");
-            localStorage.setItem("mode", "dark");
-        } else {
-            document.body.classList.remove("dark");
-            localStorage.setItem("mode", "light");
+  useEffect(() => {
+    fetchTrips();
+  }, []);
+
+  const fetchTrips = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/trips/");
+      const data = await response.json();
+
+      console.log("Fetched trips:", data);
+      setTrips(data);
+
+      if (data.length > 0) {
+        const latestTrip = data[data.length - 1];
+        console.log("Latest trip:", latestTrip);
+
+        const cycleUsed = latestTrip.current_cycle_used ?? 0;
+        const available = latestTrip.available_drive_time ?? 70 - cycleUsed;
+
+        console.log("Cycle used:", cycleUsed);
+        console.log("Available drive time:", available);
+
+        setAvailableDriveTime(available);
+      } else {
+        console.log("No trips found. Setting default available drive time.");
+        setAvailableDriveTime(70);
+      }
+    } catch (error) {
+      console.error("Error fetching trips:", error);
+      setAvailableDriveTime(70); // Safe fallback
+    } finally {
+      setLoading(false); // ✅ Always stop loading
+    }
+  };
+
+  const handleTripAdded = async () => {
+    await fetchTrips();
+  };
+
+  const latestTripId = trips.length > 0 ? trips[trips.length - 1].id : null;
+
+  const [currentTripId, setCurrentTripId] = useState(null);
+
+  useEffect(() => {
+    async function fetchCurrentTrip() {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          console.error("No token found");
+          return;
         }
-    }, [darkMode]);
 
-    // Toggle Dark Mode
-    const handleToggleDarkMode = () => {
-        setDarkMode((prevMode) => !prevMode);
-    };
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/current_trip/",
+          {
+            headers: {
+              Authorization: `Token ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-    const authContext = useContext(AuthContext);
-    const username = authContext.user?.username || "???";
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(
+            "Failed to fetch current trip:",
+            response.status,
+            errorText
+          );
+          throw new Error(`Failed to fetch current trip: ${response.status}`);
+        }
 
-    // Drive Time
-    const [availableDriveTime, setAvailableDriveTime] = useState(0);
-    useEffect(() => {
-        const fetchTrips = async () => {
-            try {
-                const response = await fetch("http://127.0.0.1:8000/api/trips/");
-                const data = await response.json();
-                setTrips(data);
-                setLoading(false);
-    
-                // Set available drive time based on the latest trip
-                if (data.length > 0) {
-                    setAvailableDriveTime(data[data.length - 1].available_drive_time);
-                } else {
-                    setAvailableDriveTime(0);  // Default to 0 if no trips exist
-                }
-            } catch (error) {
-                console.error("Error fetching trips:", error);
-                setLoading(false);
-            }
-        };
-    
-        fetchTrips();
-    }, []);
+        const data = await response.json();
+        setCurrentTripId(data.id);
+      } catch (error) {
+        console.error("Could not fetch current trip:", error);
+      }
+    }
 
-    return (
-    <div className="landing-page">
-        {/* Sidebar Navigation */}
-        <Sidebar darkMode={darkMode} handleToggleDarkMode={handleToggleDarkMode} />
-        
+    fetchCurrentTrip();
+  }, []);
 
-        {/* Dashboard Section */}
-        <section className="dashboard">
-        <div className="top">
-            <i className="uil uil-bars sidebar-toggle"></i>
-            <div className="search-box">
-            <i className="uil uil-search"></i>
-            <input type="text" placeholder="Search trips..." />
-            </div>
-            <div className="user-profile">
-            <span>Welcome {username}</span>
-            </div>
+  // Update available drive time after a log is submitted (Backend communication)
+  const handleNewLog = async (logData) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        console.error("No token found in localStorage");
+        return;
+      }
+
+      console.log("Submitting ELD log data:", logData);
+
+      const response = await fetch("http://127.0.0.1:8000/api/eld_logs/", {
+        method: "POST",
+        headers: {
+          Authorization: `Token ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(logData),
+      });
+
+      console.log("ELD log POST response status:", response.status);
+
+      const responseData = await response.json();
+
+      console.log("Response data from backend:", responseData);
+
+      if (response.ok) {
+        if (responseData.available_drive_time !== undefined) {
+          console.log(
+            "Setting availableDriveTime to:",
+            responseData.available_drive_time
+          );
+          setAvailableDriveTime(responseData.available_drive_time);
+        } else {
+          console.warn(
+            "available_drive_time not in response — falling back to fetchTrips"
+          );
+          await fetchTrips();
+        }
+      } else {
+        console.error("Log submission failed:", responseData);
+      }
+    } catch (error) {
+      console.error("Unexpected error in handleNewLog:", error);
+    }
+  };
+
+  return (
+    <Layout>
+      <div className="overview">
+        <div className="title">
+          <i className="uil uil-truck"></i>
+          <span className="text">Trip Details</span>
         </div>
+        <div className="boxes">
+          {/* Current Cycle Used */}
+          <div className="box box1">
+            <i className="uil uil-clock"></i>
+            <span className="text">Current Cycle Used</span>
+            {loading ? (
+              <span className="number">Loading...</span>
+            ) : (
+              <span
+                className="number"
+                style={{ fontSize: "30px", fontWeight: "normal" }}
+              >
+                {70 - availableDriveTime} / 70 hrs
+              </span>
+            )}
+          </div>
 
-        {/* Dashboard Overview */}
-        <div className="dash-content">
-            <div className="overview">
-                <div className="title">
-                    <i className="uil uil-truck"></i>
-                    <span className="text">Trip Details</span>
-                </div>
-            <div className="boxes">
-                <div className="box box1">
-                <i className="uil uil-clock"></i>
-                <span className="text">Current Cycle Used</span>
-                <span className="number" style={{ fontSize: "30px", fontWeight: "normal" }}>0/70 hrs</span>
-                </div>
-                {/* Display Current Trip */}
-                <div className="box box2">
-                <i className="uil uil-map-marker"></i>
-                <span className="text">Current Trip</span>
-                {loading ? (
-                    <span className="number">Loading...</span>
-                ) : trips.length > 0 ? (
-                    trips[trips.length - 1].pickup_location && trips[trips.length - 1].dropoff_location ? (
-                    <span className="number" style={{ fontSize: "30px", fontWeight: "normal" }}>{trips[trips.length - 1].pickup_location} → {trips[trips.length - 1].dropoff_location}</span>
-                    ) : (
-                    <span className="number">Trip data missing</span>
-                    )
-                ) : (
-                    <span className="number">No trips available</span>
-                )}
-                </div>
-                <div className="box box3">
-                    <i className="uil uil-schedule"></i>
-                    <span className="text">Available Drive Time</span>
-                    {loading ? (
-                        <span className="number">Loading...</span>
-                    ) : (
-                        <span className="number" style={{ fontSize: "30px", fontWeight: "normal" }}>
-                            {availableDriveTime} hrs
-                        </span>
-                    )}
-                </div>
-            </div>
-            </div>
+          {/* Current Trip */}
+          <div className="box box2">
+            <i className="uil uil-map-marker"></i>
+            <span className="text">Current Trip</span>
+            {loading ? (
+              <span className="number">Loading...</span>
+            ) : trips.length > 0 ? (
+              trips[trips.length - 1].pickup_location &&
+              trips[trips.length - 1].dropoff_location ? (
+                <span
+                  className="number"
+                  style={{ fontSize: "24px", fontWeight: "normal" }}
+                >
+                  {trips[trips.length - 1].pickup_location} →{" "}
+                  {trips[trips.length - 1].dropoff_location}
+                </span>
+              ) : (
+                <span className="number">Trip data missing</span>
+              )
+            ) : (
+              <span className="number">No trips available</span>
+            )}
+          </div>
 
-            {/* Trip Planner Section */}
-            <div className="trip-planner">
-            <div className="title">
-                <i className="uil uil-route"></i>
-                <span className="text">New Trip</span>
-            </div>
-            <div className="form-container">
-                {/* Sidebar Navigation */}
-                <TripForm darkMode={darkMode} handleToggleDarkMode={handleToggleDarkMode} />
-            </div>
-            </div>
-
+          {/* Available Drive Time */}
+          <div className="box box3">
+            <i className="uil uil-schedule"></i>
+            <span className="text">Available Drive Time</span>
+            {loading ? (
+              <span className="number">Loading...</span>
+            ) : (
+              <span
+                className="number"
+                style={{ fontSize: "30px", fontWeight: "normal" }}
+              >
+                {availableDriveTime} hrs
+              </span>
+            )}
+          </div>
         </div>
-        </section>
-    </div>
-    );
+      </div>
+
+      <br></br>
+
+      {latestTripId && <TripMap tripId={latestTripId} />}
+    </Layout>
+  );
 };
 
 export default Dashboard;

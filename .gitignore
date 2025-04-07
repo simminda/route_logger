@@ -11,8 +11,6 @@ __pycache__
 *.mo
 *.db
 *.sqlite3
-settings.py
-map.html
 
 # Environments
 .env

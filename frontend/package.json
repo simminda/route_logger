@@ -10,8 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "bootstrap": "^5.3.3",
+    "@iconscout/unicons": "^4.2.0",
+    "bootstrap": "^5.3.5",
+    "chart.js": "^4.4.8",
+    "leaflet": "^1.9.4",
     "react": "^19.0.0",
+    "react-bootstrap": "^2.10.9",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.4.0"
   },

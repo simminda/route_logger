@@ -24,11 +24,11 @@ const Sidebar = ({ darkMode, handleToggleDarkMode }) => {
         <ul className="nav-links">
           <li><Link to="/dashboard"><i className="uil uil-dashboard"></i><span>Dashboard</span></Link></li>
           <li className="active"><Link to="/new-trip"><i className="uil uil-plus-circle"></i><span>New Trip</span></Link></li>
-          <li><Link to="/history"><i className="uil uil-history"></i><span>Trip History</span></Link></li>
+          <li><Link to="/trip-history"><i className="uil uil-history"></i><span>Trip History</span></Link></li>
           <li><Link to="/logs"><i className="uil uil-file-alt"></i><span>ELD Logs</span></Link></li>
-          <li><Link to="/map"><i className="uil uil-map"></i><span>Map View</span></Link></li>
-          <li><Link to="/settings"><i className="uil uil-setting"></i><span>Settings</span></Link></li>
-          <li><Link to="/help"><i className="uil uil-question-circle"></i><span>Help & Resources</span></Link></li>
+          <li className="disabled"><Link to="/map"><i className="uil uil-map"></i><span>Map View</span></Link></li>
+          <li className="disabled"><Link to="/settings"><i className="uil uil-setting"></i><span>Settings</span></Link></li>
+          <li className="disabled"><Link to="/help"><i className="uil uil-question-circle"></i><span>Help & Resources</span></Link></li>
         </ul>
         
         {/* Authentication Links */}
