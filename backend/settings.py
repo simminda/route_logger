@@ -163,5 +163,3 @@ CORS_ALLOWED_ORIGINS = [
     "https://routelogger-620vkyk5r-simphiwe-ndabas-projects.vercel.app",
     "https://route-logger.onrender.com",
 ]
-
-CORS_ALLOW_ALL_ORIGINS = True
