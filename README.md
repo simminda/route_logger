@@ -74,8 +74,8 @@ Access the app at http://localhost:5173
 
 
 ## Live Demo and Loom Walkthrough
-- 🌐 Live App: 
-- 📹 Loom Walkthrough: 
+- 🌐 Live App: https://routelogger.vercel.app/
+- 📹 Loom Walkthrough: https://www.loom.com/share/082353663ef84f5890910de1198c7bfe?sid=8569a817-ce8c-4061-b770-c5dd69a7a3fe
 
 ## License
 This project is open-source and available under the MIT License.
