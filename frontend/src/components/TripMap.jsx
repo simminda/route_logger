@@ -154,10 +154,11 @@ const TripMap = ({ tripId }) => {
     for (let i = 0; i < waypoints.length - 1; i++) {
       const start = waypoints[i];
       const end = waypoints[i + 1];
+      const API_URL = import.meta.env.VITE_API_URL;
 
       try {
         const routeResponse = await fetch(
-          `http://127.0.0.1:8000/api/get-route/?start=${start.lat},${start.lng}&end=${end.lat},${end.lng}`
+          `${API_URL}/api/get-route/?start=${start.lat},${start.lng}&end=${end.lat},${end.lng}`
         );
 
         const routeData = await routeResponse.json();
@@ -209,11 +210,13 @@ const TripMap = ({ tripId }) => {
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
     async function fetchTripData() {
       try {
         // Fetch trip details
         const response = await fetch(
-          `http://127.0.0.1:8000/api/trips/${tripId}/`
+          `${API_URL}/api/trips/${tripId}/`
         );
         const data = await response.json();
 
@@ -326,9 +329,11 @@ const TripMap = ({ tripId }) => {
           .addTo(map)
           .bindPopup("Dropoff: " + (dropoff_location || "Unknown"));
 
+        const API_URL = import.meta.env.VITE_API_URL;
+
         // Fetch route between pickup and dropoff
         const routeResponse = await fetch(
-          `http://127.0.0.1:8000/api/get-route/?start=${pickup_lat},${pickup_lng}&end=${dropoff_lat},${dropoff_lng}`
+          `${API_URL}/api/get-route/?start=${pickup_lat},${pickup_lng}&end=${dropoff_lat},${dropoff_lng}`
         );
 
         const routeData = await routeResponse.json();

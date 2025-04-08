@@ -32,7 +32,8 @@ const TripForm = ({ tripId }) => {
         if (tripId) {
             const fetchTripData = async () => {
                 try {
-                    const response = await fetch(`http://127.0.0.1:8000/api/trips/${tripId}`);
+                    const API_URL = import.meta.env.VITE_API_URL;
+                    const response = await fetch(`${API_URL}/api/trips/${tripId}`);
                     const data = await response.json();
                     console.log("Fetched data:", data); // Debugging fetched data
                     
@@ -53,8 +54,9 @@ const TripForm = ({ tripId }) => {
         }
     }, [tripId]); // Dependency on tripId, it will rerun whenever tripId changes
 
+    const API_URL = import.meta.env.VITE_API_URL;
     const getCoordinates = async (address) => {
-        const url = `http://127.0.0.1:8000/api/get-coordinates/?address=${encodeURIComponent(address)}`;
+        const url = `${API_URL}/api/get-coordinates/?address=${encodeURIComponent(address)}`;
     
         try {
             const response = await fetch(url);
@@ -111,8 +113,10 @@ const TripForm = ({ tripId }) => {
             dropoff_lng: dropoffCoords[0]
         };
 
+        const API_URL = import.meta.env.VITE_API_URL;
+
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/trips/", {
+            const response = await fetch(`${API_URL}/api/trips/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

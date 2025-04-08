@@ -10,11 +10,13 @@ const SearchResults = ({ searchQuery }) => {
       return;
     }
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
     async function fetchSearchResults() {
       setLoading(true);
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`http://127.0.0.1:8000/api/trip-history/?search=${searchQuery}`, {
+        const response = await fetch(`${API_URL}/api/trip-history/?search=${searchQuery}`, {
           method: "GET",
           headers: {
             "Authorization": `Token ${token}`,

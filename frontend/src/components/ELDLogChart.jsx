@@ -26,12 +26,14 @@ function ELDLogChart() {
   const [logsByDate, setLogsByDate] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     async function fetchLogs() {
       try {
         const token = localStorage.getItem("token");
 
-        const response = await fetch("http://127.0.0.1:8000/api/eld_logs_by_date/", {
+        const response = await fetch(`${API_URL}/api/eld_logs_by_date/`, {
           method: "GET",
           headers: {
             "Authorization": `Token ${token}`,
@@ -164,7 +166,6 @@ function ELDLogChart() {
     return totals;
   }
   
-
   const handlePrevDate = () => {
       const logDates = Object.keys(logsByDate).sort(); // Ensure dates are sorted
       if (logDates.length === 0) return; // Prevent errors if logs are empty

@@ -20,12 +20,13 @@ const ELDLogForm = ({ onLogSubmit, tripId = null, date, setDate }) => {
     }
   }, []); // ✅ Only run on mount
   
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const fetchTripDetails = (id) => {
     setIsLoading(true);
     setError(null);
-    
-    fetch(`http://127.0.0.1:8000/api/trips/${id}/`, {
+
+    fetch(`${API_URL}/api/trips/${id}/`, {
       method: "GET",
       headers: {
         "Authorization": `Token ${localStorage.getItem("token")}`,
@@ -50,9 +51,8 @@ const ELDLogForm = ({ onLogSubmit, tripId = null, date, setDate }) => {
   const fetchCurrentTrip = () => {
     setIsLoading(true);
     setError(null);
-    
-    // Use the same endpoint as in the Dashboard component
-    fetch("http://127.0.0.1:8000/api/current_trip/", {
+
+    fetch(`${API_URL}/api/current_trip/`, {
       method: "GET",
       headers: {
         "Authorization": `Token ${localStorage.getItem("token")}`,

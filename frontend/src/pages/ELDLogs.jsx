@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import ELDLogChart from "../components/ELDLogChart";
 
-
 const ELDLogs = () => {
   // State variables
   const [currentTripId, setCurrentTripId] = useState(null);
@@ -26,7 +25,9 @@ const ELDLogs = () => {
         return;
       }
 
-      const response = await fetch("http://127.0.0.1:8000/api/current_trip/", {
+      // Replace local URL with the production API URL
+      const API_URL = import.meta.env.VITE_API_URL;  
+      const response = await fetch(`${API_URL}/api/current_trip/`, {
         headers: {
           "Authorization": `Token ${token}`,
           "Content-Type": "application/json",
@@ -60,8 +61,9 @@ const ELDLogs = () => {
         return;
       }
 
-      // Post the log to the backend
-      const response = await fetch("http://127.0.0.1:8000/api/eld_logs/", {
+      // Replace local URL with the production API URL
+      const API_URL = import.meta.env.VITE_API_URL;  // Ensure this environment variable is set in your project
+      const response = await fetch(`${API_URL}/api/eld_logs/`, {
         method: "POST",
         headers: {
           "Authorization": `Token ${token}`,
@@ -94,7 +96,6 @@ const ELDLogs = () => {
         <br></br>
         
         <div className="chart-container" style={{ marginTop: "20px" }}>
-            
           <ELDLogChart />
         </div>
       </div>

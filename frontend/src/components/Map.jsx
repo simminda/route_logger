@@ -21,9 +21,11 @@ const Map = () => {
         }
     }, [darkMode]);
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
     const fetchTrips = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/trips/");
+            const response = await fetch(`${API_URL}/api/trips/`);
             const data = await response.json();
             setTrips(data);
             setLoading(false);

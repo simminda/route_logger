@@ -10,7 +10,7 @@ const TripHistory = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const response = await fetch("http://127.0.0.1:8000/api/trip-history/", {
+        const response = await fetch("https://route-logger.onrender.com/api/trip-history/", {
           method: "GET",
           headers: {
             "Authorization": `Token ${token}`,

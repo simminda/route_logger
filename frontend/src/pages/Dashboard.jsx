@@ -15,7 +15,8 @@ const Dashboard = () => {
 
   const fetchTrips = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/trips/");
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/trips/`);
       const data = await response.json();
 
       console.log("Fetched trips:", data);
@@ -62,8 +63,8 @@ const Dashboard = () => {
           return;
         }
 
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/current_trip/",
+        const API_URL = import.meta.env.VITE_API_URL; 
+        const response = await fetch(`${API_URL}/api/current_trip/`, 
           {
             headers: {
               Authorization: `Token ${token}`,
@@ -104,7 +105,8 @@ const Dashboard = () => {
 
       console.log("Submitting ELD log data:", logData);
 
-      const response = await fetch("http://127.0.0.1:8000/api/eld_logs/", {
+      const API_URL = import.meta.env.VITE_API_URL; 
+      const response = await fetch(`${API_URL}/api/eld_logs/`, {
         method: "POST",
         headers: {
           Authorization: `Token ${token}`,
