@@ -12,12 +12,14 @@ export const AuthProvider = ({ children }) => {
         }
     }, [token]);
 
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const fetchUser = async () => {
         try {
             const token = localStorage.getItem("token");
             if (!token) return;
     
-            const response = await fetch("http://127.0.0.1:8000/api/user/", {
+            const response = await fetch(`${API_URL}/api/user/`, {
                 headers: {
                     "Authorization": `Token ${token}`,
                 },
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (credentials) => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/login/", {
+            const response = await fetch(`${API_URL}/api/user/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -62,7 +64,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (formData) => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/register/", {
+            const response = await fetch(`${API_URL}/api/user/`, {
                 method: "POST",
                 body: formData,
             });
