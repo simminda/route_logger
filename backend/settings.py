@@ -161,5 +161,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite frontend
     "http://localhost:8000",  # Django Backend
     "https://routelogger-620vkyk5r-simphiwe-ndabas-projects.vercel.app",
+    "https://routelogger-58bj3c0nr-simphiwe-ndabas-projects.vercel.app", 
     "https://route-logger.onrender.com",
 ]
