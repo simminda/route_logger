@@ -210,6 +210,8 @@ const TripMap = ({ tripId }) => {
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
     async function fetchTripData() {
       try {
         // Fetch trip details
