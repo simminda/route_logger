@@ -64,7 +64,7 @@ Access the app at http://localhost:5173
 
 ## To-Do
 - Resolve missing truck issue on Trip form (Done 09/04/2027)
-- Audit ELDLog form
+- Investigate console error on Audit ELDLog form submission and provide courtesy feedback
 - Implement Google Places or Mapbox Autocomplete
 - Enable PDF export of daily log sheets
 - Enhance user accounts and trip history
