@@ -27,15 +27,15 @@ const TripForm = ({ tripId }) => {
         current_cycle_used: 0,  // Default value is 0
     });
 
+    const [currentUserTruck, setCurrentUserTruck] = useState(null);
+
     useEffect(() => {
-        console.log("tripId:", tripId); // Debugging tripId
         if (tripId) {
             const fetchTripData = async () => {
                 try {
                     const API_URL = import.meta.env.VITE_API_URL;
                     const response = await fetch(`${API_URL}/api/trips/${tripId}`);
                     const data = await response.json();
-                    console.log("Fetched data:", data); // Debugging fetched data
                     
                     if (data) {
                         setFormData({
@@ -52,6 +52,36 @@ const TripForm = ({ tripId }) => {
 
             fetchTripData();
         }
+
+        const fetchCurrentUserTruck = async () => {
+            try {
+                const API_URL = import.meta.env.VITE_API_URL;
+                console.log("Fetching from:", `${API_URL}/api/user/truck/`);
+                
+                const response = await fetch(`${API_URL}/api/user/truck/`, {
+                    credentials: 'include',
+                });
+                
+                if (!response.ok) {
+                    console.log("User truck API not available yet. Status:", response.status);
+                    return; // Exit early without throwing an error
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.truck) {
+                    setCurrentUserTruck(data.truck);
+                    console.log("Current user's truck:", data.truck);
+                } else {
+                    console.log("No truck assigned to current user");
+                }
+            } catch (error) {
+                console.error("Error fetching user's truck:", error);
+            }
+        };
+
+        fetchCurrentUserTruck();
+
     }, [tripId]); // Dependency on tripId, it will rerun whenever tripId changes
 
     const API_URL = import.meta.env.VITE_API_URL;
@@ -110,7 +140,8 @@ const TripForm = ({ tripId }) => {
             pickup_lat: startCoords[1],
             pickup_lng: startCoords[0],
             dropoff_lat: dropoffCoords[1],
-            dropoff_lng: dropoffCoords[0]
+            dropoff_lng: dropoffCoords[0],
+            truck: currentUserTruck?.id 
         };
 
         const API_URL = import.meta.env.VITE_API_URL;

@@ -270,4 +270,24 @@ class TripCreateAPIView(APIView):
             trip = serializer.save(truck=truck)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_truck(request):
+    """Return the truck assigned to the current user"""
+    user = request.user
+    try:
+        truck = user.trucks.first()  # Get the first truck assigned to the user
+        if truck:
+            return Response({
+                'truck': {
+                    'id': truck.id,
+                    'fleet_number': truck.fleet_number
+                }
+            })
+        else:
+            return Response({'message': 'No truck assigned to user'}, status=404)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
 

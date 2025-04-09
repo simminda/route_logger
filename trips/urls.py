@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import TripViewSet, ELDLogViewSet, trip_map, geocode_address, ELDLogListView, eld_logs_by_date, register_user, login_user, get_user_info, get_route, trip_history, get_current_trip, add_eld_log, TripCreateAPIView
+from .views import TripViewSet, ELDLogViewSet, trip_map, geocode_address, ELDLogListView, eld_logs_by_date, register_user, login_user, get_user_info, get_route, trip_history, get_current_trip, add_eld_log, TripCreateAPIView, get_user_truck
 
 
 # Create a router and register viewsets
@@ -21,5 +21,6 @@ urlpatterns = [
     path('api/eld_logs/', add_eld_log, name='add_eld_log'),
     path('api/trip-history/', trip_history, name='trip-history'),
     path("api/current_trip/", get_current_trip, name='get_current_trip'),
-    path('api/create-trip/', TripCreateAPIView.as_view(), name='create-trip'),  
+    path('api/create-trip/', TripCreateAPIView.as_view(), name='create-trip'),
+    path('api/user/truck/', get_user_truck, name='user-truck'), 
 ]
