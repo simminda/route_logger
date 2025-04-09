@@ -56,19 +56,23 @@ const TripForm = ({ tripId }) => {
         const fetchCurrentUserTruck = async () => {
             try {
                 const API_URL = import.meta.env.VITE_API_URL;
-                console.log("Fetching from:", `${API_URL}/api/user/truck/`);
-                
+                const token = localStorage.getItem("token"); 
+        
                 const response = await fetch(`${API_URL}/api/user/truck/`, {
-                    credentials: 'include',
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Token ${token}`,
+                        "Content-Type": "application/json",
+                    },
                 });
-                
+        
                 if (!response.ok) {
                     console.log("User truck API not available yet. Status:", response.status);
-                    return; // Exit early without throwing an error
+                    return;
                 }
-                
+        
                 const data = await response.json();
-                
+        
                 if (data && data.truck) {
                     setCurrentUserTruck(data.truck);
                     console.log("Current user's truck:", data.truck);
@@ -79,8 +83,8 @@ const TripForm = ({ tripId }) => {
                 console.error("Error fetching user's truck:", error);
             }
         };
-
-        fetchCurrentUserTruck();
+        
+        fetchCurrentUserTruck();        
 
     }, [tripId]); // Dependency on tripId, it will rerun whenever tripId changes
 

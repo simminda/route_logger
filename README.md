@@ -63,7 +63,8 @@ Access the app at http://localhost:5173
 5. Review each day's log sheet to ensure DOT compliance.
 
 ## To-Do
-- Resolve missing truck and trip bugs on forms
+- Resolve missing truck issue on Trip form (Done 09/04/2027)
+- Audit ELDLog form
 - Implement Google Places or Mapbox Autocomplete
 - Enable PDF export of daily log sheets
 - Enhance user accounts and trip history
