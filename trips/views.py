@@ -83,6 +83,7 @@ User = get_user_model()
 
 @api_view(["POST"])
 def register_user(request):
+    '''
     try:     
         serializer = CustomUserSerializer(data=request.data)
         if serializer.is_valid():
@@ -102,6 +103,11 @@ def register_user(request):
         import traceback
         traceback.print_exc()
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        '''
+    return Response(
+        {"detail": "User registration is currently disabled."},
+        status=status.HTTP_403_FORBIDDEN
+    )
 
 
 @api_view(["POST"])
