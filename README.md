@@ -100,5 +100,5 @@ Developed by Simphiwe Ndaba
 ### Directions
 ![Directions](screenshots/2.%20directions.png)
 
-### ELD Logs
+### Electronic Logging Device (ELD) logs
 ![ELD Logs](screenshots/3.%20logs.png)
